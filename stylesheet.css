@@ -1,0 +1,56 @@
+.duosnap-card {
+  background-color: rgba(16, 17, 22, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 20px;
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.55);
+}
+
+.duosnap-tile {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 8px;
+  transition-duration: 120ms;
+}
+
+.duosnap-button {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 10px;
+  transition-duration: 120ms;
+}
+
+.duosnap-tile.duosnap-item-active,
+.duosnap-button.duosnap-item-active {
+  background-color: rgba(94, 150, 255, 0.22);
+  border-color: rgba(140, 185, 255, 0.90);
+}
+
+.duosnap-fill {
+  background-color: rgba(226, 232, 245, 0.42);
+  border-radius: 3px;
+  transition-duration: 120ms;
+}
+
+.duosnap-fill.duosnap-fill-active {
+  background-color: rgba(158, 197, 255, 0.98);
+}
+
+.duosnap-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(238, 240, 248, 0.72);
+}
+
+.duosnap-label.duosnap-label-active {
+  color: rgba(255, 255, 255, 1.0);
+}
+
+.duosnap-separator {
+  background-color: rgba(255, 255, 255, 0.13);
+}
+
+.duosnap-preview {
+  background-color: rgba(94, 150, 255, 0.30);
+  border: 3px solid rgba(160, 200, 255, 0.98);
+  border-radius: 14px;
+}

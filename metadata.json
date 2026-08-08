@@ -1,0 +1,8 @@
+{
+  "uuid": "duosnap@local",
+  "name": "Duo Snap",
+  "description": "Windows-style snap layouts for dual-screen laptops. Dragging a window raises a zone picker: halves, quarters, thirds, and a maximize target for each screen.",
+  "shell-version": ["50"],
+  "settings-schema": "org.gnome.shell.extensions.duosnap",
+  "version": 1
+}

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="duosnap">
+  <schema id="org.gnome.shell.extensions.duosnap" path="/org/gnome/shell/extensions/duosnap/">
+
+    <key name="drag-hud" type="b">
+      <default>true</default>
+      <summary>Show the zone picker while dragging a window</summary>
+    </key>
+
+    <key name="show-delay" type="i">
+      <range min="0" max="1500"/>
+      <default>180</default>
+      <summary>Delay in milliseconds before the zone picker appears</summary>
+    </key>
+
+    <key name="show-quarters" type="b">
+      <default>true</default>
+      <summary>Include the quarter zones</summary>
+    </key>
+
+    <key name="show-thirds" type="b">
+      <default>true</default>
+      <summary>Include the third-width zones</summary>
+    </key>
+
+    <key name="show-screen-row" type="b">
+      <default>true</default>
+      <summary>Include a maximize target per screen</summary>
+    </key>
+
+    <key name="window-gap" type="i">
+      <range min="0" max="64"/>
+      <default>0</default>
+      <summary>Gap in pixels left around every snapped window</summary>
+    </key>
+
+    <key name="snap-screen-up" type="as">
+      <default><![CDATA[['<Super><Control>Up']]]></default>
+      <summary>Maximize the focused window on the screen above</summary>
+    </key>
+
+    <key name="snap-screen-down" type="as">
+      <default><![CDATA[['<Super><Control>Down']]]></default>
+      <summary>Maximize the focused window on the screen below</summary>
+    </key>
+
+  </schema>
+</schemalist>
