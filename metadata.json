@@ -2,7 +2,10 @@
   "uuid": "duosnap@local",
   "name": "Duo Snap",
   "description": "ScreenXpert-style snap layouts for dual-screen laptops. Dragging a window raises a picker: aim at a screen, then pick a pane out of that screen's layouts.",
-  "shell-version": ["50"],
+  "shell-version": [
+    "50"
+  ],
   "settings-schema": "org.gnome.shell.extensions.duosnap",
-  "version": 2
+  "version": 2,
+  "url": "https://github.com/RedHatOnTop/duosnap"
 }

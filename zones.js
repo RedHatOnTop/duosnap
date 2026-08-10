@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 const T = 1 / 3;

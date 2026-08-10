@@ -136,3 +136,8 @@ request a move grab and the drag gesture itself cannot be synthesised. The drive
 emits `grab-op-begin` and `grab-op-end` on `global.display` instead and walks the
 virtual pointer between them, which exercises every line of the extension on a
 real window.
+
+## License
+
+GPL-2.0-or-later, the same terms GNOME Shell itself is under, so code can move
+between this and the shell or any other extension in either direction.
