@@ -20,9 +20,9 @@ place on Wayland, so log out and back in before it appears.
 
 ## What it does
 
-Start dragging a window and a picker fades in at the top of whichever screen the
-pointer is over. It asks two questions in the order ScreenXpert's app switcher
-asks them — which screen, then which shape:
+Start dragging a window and a picker fades in under the pointer, where the drag
+already is. It asks two questions in the order ScreenXpert's app switcher asks
+them — which screen, then which shape:
 
 - **Screen row** — one number per monitor, in screen order, the way ScreenXpert
   numbers them. A number is itself the "maximize on that screen" target; the plate
@@ -40,7 +40,9 @@ thrown into the bottom panel's bottom-right quarter without the pointer ever
 leaving the top panel. Releasing anywhere outside the picker leaves the drag
 alone, so GNOME's own edge tiling still works as usual.
 
-The picker follows the pointer across screens. With one monitor connected there is
+The picker opens where the drag is and then stays put, so a target cannot move
+out from under a pointer already travelling towards it; it is laid out again only
+when the pointer crosses to the other screen. With one monitor connected there is
 nothing to choose between, so the screen row is dropped and the tray is shown
 straight away.
 
@@ -80,6 +82,11 @@ on a 16 ms timer that only lives as long as the grab, and `overlay.js` hit-tests
 against rectangles it computed itself when laying the card out. That is also why
 the card is built from fixed-position children rather than a box layout — the hit
 rectangles have to be known exactly, not inferred from an allocation.
+
+The picker is centred on the pointer and hung below it, flipping above when the
+whole stack will not fit, and clamped into the work area. Both of those exist so
+the pointer never lands inside the picker at the moment it appears: a drag that
+opened straight onto a target would arm it before the user had looked at it.
 
 The screen row and the tray are separate surfaces rather than one card that grows,
 because a card that grew would re-centre and drag the screen blocks sideways out

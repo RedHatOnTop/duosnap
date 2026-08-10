@@ -130,9 +130,9 @@ export default class DuoSnapExtension extends Extension {
             const elapsedMs = (GLib.get_monotonic_time() - this._grabStartedAt) / 1000;
             if (elapsedMs < this._settings.get_int('show-delay'))
                 return;
-            this._overlay.show(monitorIndexAt(x, y));
+            this._overlay.show(monitorIndexAt(x, y), x, y);
         } else {
-            this._overlay.setMonitor(monitorIndexAt(x, y));
+            this._overlay.setMonitor(monitorIndexAt(x, y), x, y);
         }
 
         this._zone = this._overlay.hoverAt(x, y);

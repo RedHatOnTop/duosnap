@@ -22,7 +22,7 @@ const REVEAL_GAP = 16;
 const CORD_W = 2;
 const FRAME_INSET = 1;
 const SEAM = 1;
-const TOP_MARGIN = 26;
+const POINTER_GAP = 18;
 const EDGE_MARGIN = 8;
 
 // Miniatures carry the work area's aspect so a template reads as a picture of
@@ -100,7 +100,8 @@ export class SnapOverlay {
         return [...this._screenItems, ...this._tabItems, ...this._paneItems];
     }
 
-    show(monitorIndex) {
+    show(monitorIndex, pointerX, pointerY) {
+        this._anchor = {x: pointerX, y: pointerY};
         this._build(monitorIndex);
 
         if (this._screenItems.length) {
@@ -111,11 +112,12 @@ export class SnapOverlay {
         }
     }
 
-    setMonitor(monitorIndex) {
+    setMonitor(monitorIndex, pointerX, pointerY) {
         if (monitorIndex === this._monitorIndex || !this.visible)
             return;
 
         const trayWasUp = this._tray.visible;
+        this._anchor = {x: pointerX, y: pointerY};
         this._build(monitorIndex);
         this._card.visible = this._screenItems.length > 0;
         if (trayWasUp || !this._screenItems.length)
@@ -349,13 +351,31 @@ export class SnapOverlay {
             !t.setting || this._settings.get_boolean(t.setting));
         const screens = Main.layoutManager.monitors.length > 1 ? screenOrdinals() : [];
 
-        const monitor = Main.layoutManager.monitors[monitorIndex];
         const wa = workAreaFor(monitorIndex);
 
         const cardW = screens.length * SCREEN_W + SCREEN_GAP * (screens.length - 1) + 2 * PAD;
         const cardH = PAD + screenH + TAB_GAP + TAB_H + PAD_BOTTOM;
-        const cardX = Math.round(monitor.x + (monitor.width - cardW) / 2);
-        const cardY = Math.round(wa.y + TOP_MARGIN);
+        const trayW = templates.length * TPL_W + TPL_GAP * (templates.length - 1) + 2 * TRAY_PAD;
+        const trayH = tplH + 2 * TRAY_PAD;
+        const stackH = screens.length ? cardH + REVEAL_GAP + trayH : trayH;
+
+        // The picker opens where the drag already is. Centred on the pointer and
+        // hung below it, or above it when the stack will not fit, so that the
+        // pointer never lands on a target the moment the picker appears.
+        const anchorX = this._anchor?.x ?? wa.x + wa.width / 2;
+        const anchorY = this._anchor?.y ?? wa.y;
+        const centred = width => Math.round(Math.min(
+            Math.max(anchorX - width / 2, wa.x + EDGE_MARGIN),
+            wa.x + wa.width - width - EDGE_MARGIN));
+
+        let stackY = Math.round(anchorY + POINTER_GAP);
+        if (stackY + stackH > wa.y + wa.height - EDGE_MARGIN)
+            stackY = Math.round(anchorY - POINTER_GAP - stackH);
+        stackY = Math.min(Math.max(stackY, wa.y + EDGE_MARGIN),
+            wa.y + wa.height - stackH - EDGE_MARGIN);
+
+        const cardX = centred(cardW);
+        const cardY = stackY;
 
         this._cardRect = {x: cardX, y: cardY, width: cardW, height: cardH};
         this._card.set_position(cardX, cardY);
@@ -374,11 +394,7 @@ export class SnapOverlay {
             x += SCREEN_W + SCREEN_GAP;
         });
 
-        const trayW = templates.length * TPL_W + TPL_GAP * (templates.length - 1) + 2 * TRAY_PAD;
-        const trayH = tplH + 2 * TRAY_PAD;
-        const trayX = Math.round(Math.min(
-            Math.max(monitor.x + (monitor.width - trayW) / 2, monitor.x + EDGE_MARGIN),
-            monitor.x + monitor.width - trayW - EDGE_MARGIN));
+        const trayX = centred(trayW);
         const trayY = screens.length ? cardY + cardH + REVEAL_GAP : cardY;
 
         this._trayRect = {x: trayX, y: trayY, width: trayW, height: trayH};
