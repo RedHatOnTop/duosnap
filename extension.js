@@ -18,6 +18,21 @@ function isMoveGrab(op) {
     return op === Meta.GrabOp.MOVING || op === Meta.GrabOp.MOVING_UNCONSTRAINED;
 }
 
+// console.log rather than console.debug: GLib drops DEBUG unless G_MESSAGES_DEBUG
+// names the domain, and a log that is off by default records nothing the one time
+// it is needed. Both call sites are user-initiated and fire at most a few times a
+// minute, so always-on costs nothing.
+function log(message) {
+    console.log(`duosnap: ${message}`);
+}
+
+function describeMonitors() {
+    const {monitors, primaryIndex} = Main.layoutManager;
+    return `${monitors.length} [${monitors
+        .map(m => `${m.index}${m.index === primaryIndex ? '*' : ''}:${m.width}x${m.height}+${m.x}+${m.y}`)
+        .join(' ')}]`;
+}
+
 export default class DuoSnapExtension extends Extension {
     enable() {
         this._settings = this.getSettings();
@@ -32,8 +47,15 @@ export default class DuoSnapExtension extends Extension {
             (_display, window, op) => this._onGrabBegin(window, op));
         this._grabEndId = global.display.connect('grab-op-end',
             () => this._onGrabEnd());
-        this._monitorsId = Main.layoutManager.connect('monitors-changed',
-            () => this._endDrag());
+        this._monitorLayout = describeMonitors();
+        this._monitorsId = Main.layoutManager.connect('monitors-changed', () => {
+            const previous = this._monitorLayout;
+            this._monitorLayout = describeMonitors();
+            log(`monitors-changed: ${previous} -> ${this._monitorLayout}`);
+            this._endDrag();
+        });
+
+        log(`enabled, monitors ${this._monitorLayout}`);
 
         for (const [name, direction] of KEYBINDINGS) {
             Main.wm.addKeybinding(name, this._settings, Meta.KeyBindingFlags.NONE,
@@ -129,6 +151,13 @@ export default class DuoSnapExtension extends Extension {
 
     _applyNow(window, zone) {
         const {rect} = zone;
+
+        // Read the monitor before move_to_monitor, so the line records where the
+        // window came from rather than where it ended up.
+        log(`apply ${zone.id} to ${window.get_wm_class() ?? '?'} ` +
+            `"${window.get_title() ?? '?'}": monitor ${window.get_monitor()} -> ` +
+            `${zone.monitorIndex}, ${rect.width}x${rect.height}+${rect.x}+${rect.y}` +
+            `${zone.maximize ? ' (maximize)' : ''}`);
 
         if (window.is_maximized())
             window.unmaximize();
