@@ -57,6 +57,11 @@ something other than what it promised, so it is not offered.
 
 ## Notes on the implementation
 
+The look is taken from ScreenXpert's app switcher rather than from the shell's own
+menus: light panels, hairline grey borders, grey panes, and one solid navy for
+whatever is selected. It is deliberately not Adwaita — a picker that reads as part
+of the desktop chrome is a picker you lose track of mid-drag.
+
 Mutter owns the pointer for the duration of a move grab, so the picker never
 receives crossing events of its own. Instead `extension.js` polls `global.get_pointer()`
 on a 16 ms timer that only lives as long as the grab, and `overlay.js` hit-tests

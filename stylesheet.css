@@ -1,105 +1,116 @@
+/* Lifted from ScreenXpert's app switcher: light panels, hairline grey borders,
+   grey panes, one solid navy for whatever is selected. */
+
 .duosnap-card {
-  background-color: rgba(16, 17, 22, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  border-radius: 20px;
-  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.55);
+  background-color: rgba(243, 243, 243, 0.97);
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  border-radius: 10px;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.34);
+}
+
+.duosnap-divider {
+  background-color: rgba(0, 0, 0, 0.14);
 }
 
 /* Stage one: which screen. */
 
 .duosnap-screen {
-  background-color: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.11);
-  border-radius: 8px;
-  transition-duration: 120ms;
+  background-color: rgb(222, 222, 222);
+  border: 1px solid rgba(0, 0, 0, 0.26);
+  border-radius: 4px;
+  transition-duration: 110ms;
 }
 
 .duosnap-screen.duosnap-screen-armed {
-  background-color: rgba(94, 150, 255, 0.10);
-  border-color: rgba(140, 185, 255, 0.55);
+  background-color: rgb(205, 214, 233);
+  border-color: rgba(43, 75, 142, 0.60);
 }
 
 .duosnap-screen.duosnap-screen-hover {
-  background-color: rgba(94, 150, 255, 0.26);
-  border-color: rgba(160, 200, 255, 0.95);
+  background-color: rgb(43, 75, 142);
+  border-color: rgb(28, 52, 105);
 }
 
 .duosnap-ordinal {
-  font-size: 19px;
-  font-weight: 700;
-  color: rgba(238, 240, 248, 0.40);
+  font-size: 26px;
+  font-weight: 400;
+  color: rgba(45, 45, 45, 0.80);
 }
 
-.duosnap-screen-armed .duosnap-ordinal,
 .duosnap-screen-hover .duosnap-ordinal {
-  color: rgba(255, 255, 255, 0.95);
+  color: rgb(255, 255, 255);
 }
 
 .duosnap-screen-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: rgba(238, 240, 248, 0.58);
-}
-
-.duosnap-divider {
-  background-color: rgba(255, 255, 255, 0.09);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  color: rgba(55, 55, 55, 0.72);
 }
 
 /* The way through to stage two. */
 
-.duosnap-handle {
-  background-color: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  border-radius: 6px;
-  transition-duration: 120ms;
+.duosnap-tab {
+  background-color: rgb(231, 231, 231);
+  border: 1px solid rgba(0, 0, 0, 0.20);
+  border-radius: 4px;
+  transition-duration: 110ms;
 }
 
-.duosnap-handle.duosnap-handle-open {
-  background-color: rgba(94, 150, 255, 0.16);
-  border-color: rgba(140, 185, 255, 0.55);
+.duosnap-tab.duosnap-tab-open {
+  background-color: rgb(205, 214, 233);
+  border-color: rgba(43, 75, 142, 0.60);
 }
 
-.duosnap-handle.duosnap-handle-hover {
-  background-color: rgba(94, 150, 255, 0.30);
-  border-color: rgba(160, 200, 255, 0.95);
+.duosnap-tab.duosnap-tab-hover {
+  background-color: rgb(43, 75, 142);
+  border-color: rgb(28, 52, 105);
 }
 
 .duosnap-grip {
-  background-color: rgba(238, 240, 248, 0.40);
-  border-radius: 1px;
-  transition-duration: 120ms;
+  background-color: rgba(70, 70, 70, 0.70);
+  transition-duration: 110ms;
 }
 
-.duosnap-handle-open .duosnap-grip,
-.duosnap-handle-hover .duosnap-grip {
+.duosnap-tab-open .duosnap-grip {
+  background-color: rgba(43, 75, 142, 0.95);
+}
+
+.duosnap-tab-hover .duosnap-grip {
   background-color: rgba(255, 255, 255, 0.95);
 }
 
-/* Stage two: which pane of which layout. */
+.duosnap-cord {
+  background-color: rgba(43, 75, 142, 0.75);
+}
+
+/* Stage two: which pane of which layout. The frame is the seam colour showing
+   between the panes, which is what draws the split. */
 
 .duosnap-frame {
-  background-color: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.11);
-  border-radius: 8px;
-  transition-duration: 120ms;
+  background-color: rgba(0, 0, 0, 0.26);
+  border: 1px solid rgba(0, 0, 0, 0.26);
+  border-radius: 4px;
+  transition-duration: 110ms;
 }
 
 .duosnap-frame.duosnap-frame-active {
-  border-color: rgba(140, 185, 255, 0.90);
+  border-color: rgba(43, 75, 142, 0.85);
 }
 
 .duosnap-pane {
-  background-color: rgba(226, 232, 245, 0.30);
-  border-radius: 2px;
-  transition-duration: 120ms;
+  background-color: rgb(214, 214, 214);
+  transition-duration: 110ms;
 }
 
 .duosnap-pane.duosnap-pane-active {
-  background-color: rgba(158, 197, 255, 0.98);
+  background-color: rgb(43, 75, 142);
 }
 
+/* Sits on the wallpaper rather than on a panel, so it takes a brighter blue than
+   the picker's navy or it disappears on a dark background. */
 .duosnap-preview {
-  background-color: rgba(94, 150, 255, 0.30);
-  border: 3px solid rgba(160, 200, 255, 0.98);
-  border-radius: 14px;
+  background-color: rgba(88, 133, 224, 0.26);
+  border: 3px solid rgba(108, 152, 240, 0.98);
+  border-radius: 12px;
 }
