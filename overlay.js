@@ -8,9 +8,14 @@ const TILE_W = 74;
 const TILE_MIN_H = 32;
 const TILE_MAX_H = 58;
 const TPL_GAP = 8;
-const SCREEN_GAP = 10;
+const SCREEN_GAP = 12;
 const LABEL_H = 15;
 const LABEL_GAP = 4;
+const HANDLE_H = 17;
+const HANDLE_GAP = 5;
+const GRIP_W = 17;
+const GRIP_H = 2;
+const GRIP_GAP = 4;
 const PAD = 14;
 const TRAY_PAD = 12;
 const REVEAL_GAP = 14;
@@ -37,7 +42,9 @@ export class SnapOverlay {
         this._settings = settings;
         this._monitorIndex = -1;
         this._armed = -1;
+        this._trayMonitor = -1;
         this._screenItems = [];
+        this._handleItems = [];
         this._paneItems = [];
         this._bands = [];
         this._cardRect = {x: 0, y: 0, width: 0, height: 0};
@@ -81,6 +88,10 @@ export class SnapOverlay {
         return this._card.visible || this._tray.visible;
     }
 
+    get _items() {
+        return [...this._screenItems, ...this._handleItems, ...this._paneItems];
+    }
+
     show(monitorIndex) {
         this._build(monitorIndex);
 
@@ -112,14 +123,7 @@ export class SnapOverlay {
         if (!this.visible)
             return null;
 
-        let hit = null;
-
-        for (const item of this._screenItems) {
-            if (contains(item.hit, x, y)) {
-                hit = item;
-                break;
-            }
-        }
+        let hit = this._screenItems.find(item => contains(item.hit, x, y)) ?? null;
 
         if (hit) {
             // A screen block is the maximize target, and going back up to one
@@ -127,9 +131,13 @@ export class SnapOverlay {
             this._setArmed(hit.monitorIndex);
             this._hideTray();
         } else {
-            const band = this._bands.find(b => contains(b.rect, x, y));
+            hit = this._handleItems.find(item => contains(item.hit, x, y)) ?? null;
+            const band = hit ?? this._bands.find(b => contains(b.rect, x, y));
+
             if (band) {
-                // The strip under a screen block is what asks for its layouts.
+                // The handle under a screen block is what asks for its layouts;
+                // the band carries on down to the tray so the pointer can reach
+                // it without falling out of the reveal.
                 this._setArmed(band.monitorIndex);
                 this._showTray(band.monitorIndex);
             } else if (this._tray.visible && contains(this._trayRect, x, y)) {
@@ -144,12 +152,11 @@ export class SnapOverlay {
             return this._active;
         this._activeItem = hit;
 
-        for (const item of this._screenItems)
-            this._setItemActive(item, item === hit);
-        for (const item of this._paneItems)
+        for (const item of this._items)
             this._setItemActive(item, item === hit);
 
-        const resolved = hit ? this._resolve(hit) : null;
+        // A handle is a way in, not a destination: releasing on one snaps nothing.
+        const resolved = hit && hit.type !== 'handle' ? this._resolve(hit) : null;
         this._active = resolved;
         this._updatePreview(resolved);
         return resolved;
@@ -162,10 +169,9 @@ export class SnapOverlay {
             actor.hide();
             actor.remove_all_transitions();
         }
-        for (const item of this._screenItems)
+        for (const item of this._items)
             this._setItemActive(item, false);
-        for (const item of this._paneItems)
-            this._setItemActive(item, false);
+        this._markOpenHandle(-1);
     }
 
     destroy() {
@@ -174,6 +180,7 @@ export class SnapOverlay {
             actor.destroy();
         }
         this._screenItems = [];
+        this._handleItems = [];
         this._paneItems = [];
         this._bands = [];
         this._active = null;
@@ -192,7 +199,7 @@ export class SnapOverlay {
     }
 
     // Pane hit rects are kept relative to the tray, which moves under whichever
-    // screen block asked for it.
+    // handle asked for it.
     _paneHit(item) {
         return {
             x: this._trayRect.x + item.local.x,
@@ -202,11 +209,20 @@ export class SnapOverlay {
         };
     }
 
+    _markOpenHandle(monitorIndex) {
+        for (const item of this._handleItems) {
+            const fn = item.monitorIndex === monitorIndex
+                ? 'add_style_class_name' : 'remove_style_class_name';
+            item.actor[fn]('duosnap-handle-open');
+        }
+    }
+
     _showTray(monitorIndex) {
         if (this._tray.visible && monitorIndex === this._trayMonitor)
             return;
 
         this._positionTray(monitorIndex);
+        this._markOpenHandle(monitorIndex);
         if (!this._tray.visible)
             this._fadeIn(this._tray);
     }
@@ -216,6 +232,8 @@ export class SnapOverlay {
             return;
         this._tray.remove_all_transitions();
         this._tray.hide();
+        this._trayMonitor = -1;
+        this._markOpenHandle(-1);
         for (const item of this._paneItems)
             this._setItemActive(item, false);
     }
@@ -328,10 +346,10 @@ export class SnapOverlay {
     _build(monitorIndex) {
         this._monitorIndex = monitorIndex;
         this._armed = monitorIndex;
-        this._trayMonitor = -1;
         this._card.remove_all_children();
         this._tray.remove_all_children();
         this._screenItems = [];
+        this._handleItems = [];
         this._paneItems = [];
         this._bands = [];
         this._active = null;
@@ -346,9 +364,9 @@ export class SnapOverlay {
         const monitor = Main.layoutManager.monitors[monitorIndex];
         const wa = workAreaFor(monitorIndex);
 
-        const screenRowW = screens.length * TILE_W + SCREEN_GAP * (screens.length - 1);
-        const cardW = screenRowW + 2 * PAD;
-        const cardH = tileH + LABEL_GAP + LABEL_H + 2 * PAD;
+        const columnH = tileH + LABEL_GAP + LABEL_H + HANDLE_GAP + HANDLE_H;
+        const cardW = screens.length * TILE_W + SCREEN_GAP * (screens.length - 1) + 2 * PAD;
+        const cardH = columnH + 2 * PAD;
         const cardX = Math.round(monitor.x + (monitor.width - cardW) / 2);
         const cardY = Math.round(wa.y + TOP_MARGIN);
 
@@ -357,16 +375,20 @@ export class SnapOverlay {
         this._card.set_size(cardW, cardH);
 
         let x = PAD;
-        for (const screen of screens) {
+        screens.forEach((screen, i) => {
+            if (i > 0) {
+                const divider = new St.Widget({style_class: 'duosnap-divider'});
+                divider.set_position(Math.round(x - SCREEN_GAP / 2), PAD + 2);
+                divider.set_size(1, columnH - 4);
+                this._card.add_child(divider);
+            }
             this._addScreen(screen, x, PAD, tileH, cardX, cardY);
             x += TILE_W + SCREEN_GAP;
-        }
+        });
 
         const trayW = templates.length * TILE_W + TPL_GAP * (templates.length - 1) + 2 * TRAY_PAD;
         const trayH = tileH + 2 * TRAY_PAD;
-        const trayY = screens.length
-            ? cardY + cardH + REVEAL_GAP
-            : cardY;
+        const trayY = screens.length ? cardY + cardH + REVEAL_GAP : cardY;
 
         this._trayRect = {
             x: Math.round(monitor.x + (monitor.width - trayW) / 2),
@@ -383,10 +405,10 @@ export class SnapOverlay {
             x += TILE_W + TPL_GAP;
         }
 
-        // The strip each screen block owns between itself and the tray. Half the
-        // inter-block gap on each side keeps the strips contiguous, so a pointer
-        // travelling straight down never falls between them.
-        for (const item of this._screenItems) {
+        // Tolerance below each handle, so a pointer on its way down to the tray
+        // does not leave the reveal and close it again. Half the inter-column gap
+        // on each side keeps the bands contiguous.
+        for (const item of this._handleItems) {
             this._bands.push({
                 monitorIndex: item.monitorIndex,
                 rect: {
@@ -415,8 +437,9 @@ export class SnapOverlay {
         }));
         this._card.add_child(frame);
 
+        const captionY = y + tileH + LABEL_GAP;
         const caption = new St.Widget({layout_manager: new Clutter.BinLayout()});
-        caption.set_position(x, y + tileH + LABEL_GAP);
+        caption.set_position(x, captionY);
         caption.set_size(TILE_W, LABEL_H);
         caption.add_child(new St.Label({
             style_class: 'duosnap-screen-label',
@@ -426,7 +449,7 @@ export class SnapOverlay {
         }));
         this._card.add_child(caption);
 
-        const item = {
+        this._screenItems.push({
             type: 'screen',
             id: `screen-${screen.index}`,
             monitorIndex: screen.index,
@@ -441,12 +464,41 @@ export class SnapOverlay {
                 width: TILE_W,
                 height: tileH + LABEL_GAP + LABEL_H,
             },
-        };
+        });
 
         if (screen.index === this._armed)
             frame.add_style_class_name('duosnap-screen-armed');
 
-        this._screenItems.push(item);
+        // The reveal has to be somewhere the eye can find it, so it gets a
+        // control of its own rather than an invisible strip of card.
+        const handleY = captionY + LABEL_H + HANDLE_GAP;
+        const handle = new St.Widget({
+            style_class: 'duosnap-handle',
+            layout_manager: new Clutter.FixedLayout(),
+            reactive: false,
+        });
+        handle.set_position(x, handleY);
+        handle.set_size(TILE_W, HANDLE_H);
+        this._card.add_child(handle);
+
+        const gripX = Math.round((TILE_W - GRIP_W) / 2);
+        const gripY = Math.round((HANDLE_H - (2 * GRIP_H + GRIP_GAP)) / 2);
+        for (let i = 0; i < 2; i++) {
+            const bar = new St.Widget({style_class: 'duosnap-grip'});
+            bar.set_position(gripX, gripY + i * (GRIP_H + GRIP_GAP));
+            bar.set_size(GRIP_W, GRIP_H);
+            handle.add_child(bar);
+        }
+
+        this._handleItems.push({
+            type: 'handle',
+            id: `handle-${screen.index}`,
+            monitorIndex: screen.index,
+            actor: handle,
+            activeClass: 'duosnap-handle-hover',
+            active: false,
+            hit: {x: cardX + x, y: cardY + handleY, width: TILE_W, height: HANDLE_H},
+        });
     }
 
     _addTemplate(template, x, y, tileH) {

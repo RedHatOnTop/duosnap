@@ -15,11 +15,12 @@ asks them — which screen, then which shape:
 - **Screen row** — one block per monitor, labelled `▲ Top` / `▼ Bottom` when the
   monitors are stacked in a column and `Screen 1` / `Screen 2` otherwise. A block
   is itself the "maximize on that screen" target.
-- **Layout tray** — carrying on downwards, out of the bottom of a screen block,
-  raises that screen's layouts: quarters, left and right halves, top and bottom
-  halves, vertical thirds. Each is a miniature of the screen split into every pane
-  it offers, and hovering a pane outlines the exact rectangle the window will land
-  in. Going back up to the screen row puts the tray away again.
+- **Layout tray** — under each block is a grip, and entering it raises that
+  screen's layouts: quarters, left and right halves, top and bottom halves,
+  vertical thirds. Each is a miniature of the screen split into every pane it
+  offers, and hovering a pane outlines the exact rectangle the window will land
+  in. Releasing on a grip snaps nothing; it is a way in, not a destination. Going
+  back up to the screen row puts the tray away again.
 
 So nothing but the screens is on offer until a screen has been chosen, and the
 layouts that then appear belong to that screen — which means a window can be
@@ -71,10 +72,12 @@ and never rebuilt, and pane hit rectangles are stored relative to it. They tile 
 template's full miniature, seams and border included, so there is nowhere inside a
 template that selects nothing.
 
-Each screen block owns the strip of pixels between its own bottom edge and the top
-of the tray, and that strip is what raises the tray. The strips are widened by half
-the gap between blocks so that they meet, and a pointer travelling straight down
-cannot fall between them and leave the tray closed.
+The grip is a drawn control rather than a hot strip of card because a reveal the
+eye cannot find is not a reveal. It keeps a lit state for as long as the tray it
+opened is up, so it is clear which block the layouts on offer belong to. Below it,
+down to the top of the tray, is an undrawn band that counts as the same target,
+widened by half the gap between columns so the bands meet: a pointer travelling
+straight down to the tray never falls out of the reveal and closes it.
 
 Snapping happens in a `BEFORE_REDRAW` later rather than directly in `grab-op-end`,
 because at that point mutter has not finished placing the window it was dragging

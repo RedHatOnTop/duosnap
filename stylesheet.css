@@ -41,6 +41,40 @@
   color: rgba(238, 240, 248, 0.58);
 }
 
+.duosnap-divider {
+  background-color: rgba(255, 255, 255, 0.09);
+}
+
+/* The way through to stage two. */
+
+.duosnap-handle {
+  background-color: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 6px;
+  transition-duration: 120ms;
+}
+
+.duosnap-handle.duosnap-handle-open {
+  background-color: rgba(94, 150, 255, 0.16);
+  border-color: rgba(140, 185, 255, 0.55);
+}
+
+.duosnap-handle.duosnap-handle-hover {
+  background-color: rgba(94, 150, 255, 0.30);
+  border-color: rgba(160, 200, 255, 0.95);
+}
+
+.duosnap-grip {
+  background-color: rgba(238, 240, 248, 0.40);
+  border-radius: 1px;
+  transition-duration: 120ms;
+}
+
+.duosnap-handle-open .duosnap-grip,
+.duosnap-handle-hover .duosnap-grip {
+  background-color: rgba(255, 255, 255, 0.95);
+}
+
 /* Stage two: which pane of which layout. */
 
 .duosnap-frame {
