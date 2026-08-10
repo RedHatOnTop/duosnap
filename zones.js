@@ -1,27 +1,45 @@
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
-// Fractional rects [x, y, w, h] inside a monitor work area.
-export const LAYOUT_ZONES = [
-    {id: 'full', frac: [0, 0, 1, 1]},
-    {id: 'left-half', frac: [0, 0, 0.5, 1]},
-    {id: 'right-half', frac: [0.5, 0, 0.5, 1]},
-    {id: 'top-half', frac: [0, 0, 1, 0.5]},
-    {id: 'bottom-half', frac: [0, 0.5, 1, 0.5]},
-];
-
-export const QUARTER_ZONES = [
-    {id: 'q-tl', frac: [0, 0, 0.5, 0.5]},
-    {id: 'q-tr', frac: [0.5, 0, 0.5, 0.5]},
-    {id: 'q-bl', frac: [0, 0.5, 0.5, 0.5]},
-    {id: 'q-br', frac: [0.5, 0.5, 0.5, 0.5]},
-];
-
 const T = 1 / 3;
 
-export const THIRD_ZONES = [
-    {id: 'third-l', frac: [0, 0, T, 1]},
-    {id: 'third-c', frac: [T, 0, T, 1]},
-    {id: 'third-r', frac: [2 * T, 0, T, 1]},
+// One entry per layout, each a complete split of the work area rather than a
+// single zone. The tray draws the whole split and the pointer picks a pane
+// inside it, which is what keeps the picker from listing every zone at once.
+// Order follows ScreenXpert's app switcher: quarters, left/right, top/bottom.
+export const TEMPLATES = [
+    {
+        id: 'quarters',
+        setting: 'show-quarters',
+        panes: [
+            {id: 'q-tl', frac: [0, 0, 0.5, 0.5]},
+            {id: 'q-tr', frac: [0.5, 0, 0.5, 0.5]},
+            {id: 'q-bl', frac: [0, 0.5, 0.5, 0.5]},
+            {id: 'q-br', frac: [0.5, 0.5, 0.5, 0.5]},
+        ],
+    },
+    {
+        id: 'halves-v',
+        panes: [
+            {id: 'left-half', frac: [0, 0, 0.5, 1]},
+            {id: 'right-half', frac: [0.5, 0, 0.5, 1]},
+        ],
+    },
+    {
+        id: 'halves-h',
+        panes: [
+            {id: 'top-half', frac: [0, 0, 1, 0.5]},
+            {id: 'bottom-half', frac: [0, 0.5, 1, 0.5]},
+        ],
+    },
+    {
+        id: 'thirds',
+        setting: 'show-thirds',
+        panes: [
+            {id: 'third-l', frac: [0, 0, T, 1]},
+            {id: 'third-c', frac: [T, 0, T, 1]},
+            {id: 'third-r', frac: [2 * T, 0, T, 1]},
+        ],
+    },
 ];
 
 export function workAreaFor(monitorIndex) {
@@ -70,8 +88,9 @@ export function screenLabels() {
 
     return monitors.map((m, i) => ({
         index: m.index,
+        ordinal: `${i + 1}`,
         label: stacked ? (i === 0 ? 'Top' : 'Bottom') : `Screen ${i + 1}`,
-        glyph: stacked ? (i === 0 ? '▲' : '▼') : `${i + 1}`,
+        glyph: stacked ? (i === 0 ? '▲' : '▼') : '',
     }));
 }
 

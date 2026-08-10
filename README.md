@@ -9,19 +9,25 @@ is hardcoded to that machine.
 ## What it does
 
 Start dragging a window and a picker fades in at the top of whichever screen the
-pointer is over:
+pointer is over. It asks two questions in the order ScreenXpert's app switcher
+asks them — which screen, then which shape:
 
-- **Row 1** — full, left half, right half, top half, bottom half
-- **Row 2** — the four quarters, then the three vertical thirds
-- **Row 3** — one maximize target per screen, labelled `Top` / `Bottom` when the
-  monitors are stacked in a column and `Screen 1` / `Screen 2` otherwise
+- **Screen row** — one block per monitor, labelled `▲ Top` / `▼ Bottom` when the
+  monitors are stacked in a column and `Screen 1` / `Screen 2` otherwise. Entering
+  a block aims the tray below at that screen; releasing on it maximizes there.
+- **Layout tray** — a miniature of the aimed screen per layout, split into every
+  pane that layout offers: quarters, left and right halves, top and bottom halves,
+  vertical thirds. Hovering a pane outlines the exact rectangle the window will
+  land in.
 
-Hovering a target outlines the exact rectangle the window will land in. Releasing
-the button snaps it there; releasing anywhere else leaves the drag alone, so
-GNOME's own edge tiling still works as usual.
+Because the tray is aimed rather than followed, a window can be thrown into the
+bottom panel's bottom-right quarter without the pointer ever leaving the top
+panel. Releasing anywhere outside the card leaves the drag alone, so GNOME's own
+edge tiling still works as usual.
 
-The picker follows the pointer across screens, so you can throw a window from the
-lower panel to the upper one without ever letting go of the button.
+The card follows the pointer across screens, and the screen it lands on starts out
+aimed, so snapping within the current screen costs no extra hover. With one
+monitor connected the screen row is dropped and the tray is all that remains.
 
 ### Keyboard
 
@@ -35,8 +41,8 @@ Both are rebindable in the extension's preferences.
 ### Preferences
 
 `gnome-extensions prefs duosnap@local` — toggle the picker, set how long a drag has
-to last before it appears, drop the quarter/third/screen rows you do not use, and
-set a gap to leave around every snapped window.
+to last before it appears, drop the quarters or thirds layouts, and set a gap to
+leave around every snapped window. Halves are always offered.
 
 ## What it deliberately does not do
 
@@ -55,11 +61,17 @@ against rectangles it computed itself when laying the card out. That is also why
 the card is built from fixed-position children rather than a box layout — the hit
 rectangles have to be known exactly, not inferred from an allocation.
 
+Aiming the tray at a screen changes nothing but the monitor its panes resolve
+against. Every tray rectangle is identical from one screen to the next, so no
+rebuild happens and no target shifts out from under a pointer that is already
+moving toward it. Pane hit rectangles tile a template's full miniature, seams and
+border included, so there is nowhere inside a template that selects nothing.
+
 Snapping happens in a `BEFORE_REDRAW` later rather than directly in `grab-op-end`,
 because at that point mutter has not finished placing the window it was dragging
 and an immediate `move_resize_frame` gets overwritten.
 
-Full-monitor targets go through `maximize()` rather than an equivalent
+Full-screen targets go through `maximize()` rather than an equivalent
 `move_resize_frame`, so the window ends up genuinely maximized and unmaximizes the
 way the user expects. That is skipped when a window gap is configured, since a
 maximized window cannot have one.
@@ -75,9 +87,16 @@ gnome-shell --headless --wayland-display=duosnap-test \
     --virtual-monitor 1920x1200 --virtual-monitor 1920x1200
 ```
 
-with `XDG_DATA_HOME`/`XDG_CONFIG_HOME` redirected so its dconf and extension set
-stay isolated, `gdctl` to stack the two virtual monitors at 1.25 scale, and a
-second throwaway extension that flips `global.context.unsafe_mode` so the test
-driver can reach the shell over `org.gnome.Shell.Eval`. Drags are synthesised with
-a `Clutter` virtual pointer device; a real drag needs interpolated motion, as a
-couple of large jumps never crosses GTK's drag threshold.
+run under `dbus-run-session` with `XDG_DATA_HOME`/`XDG_CONFIG_HOME` redirected so
+its dconf and extension set stay isolated, `gdctl` to stack the two virtual
+monitors at 1.25 scale, and a second throwaway extension that flips
+`global.context.unsafe_mode` and hands the test driver a `globalThis` bridge —
+`org.gnome.Shell.Eval` runs outside any module scope, so since GNOME 45 there is
+no other way to reach `Main` or the extension object from it.
+
+Clutter virtual pointer events move the shell's own pointer in that headless
+session but are never delivered to Wayland clients, so a client cannot be made to
+request a move grab and the drag gesture itself cannot be synthesised. The driver
+emits `grab-op-begin` and `grab-op-end` on `global.display` instead and walks the
+virtual pointer between them, which exercises every line of the extension on a
+real window.

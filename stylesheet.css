@@ -5,44 +5,63 @@
   box-shadow: 0 14px 44px rgba(0, 0, 0, 0.55);
 }
 
-.duosnap-tile {
-  background-color: rgba(255, 255, 255, 0.05);
+/* Stage one: which screen. */
+
+.duosnap-screen {
+  background-color: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.11);
   border-radius: 8px;
   transition-duration: 120ms;
 }
 
-.duosnap-button {
-  background-color: rgba(255, 255, 255, 0.05);
+.duosnap-screen.duosnap-screen-armed {
+  background-color: rgba(94, 150, 255, 0.10);
+  border-color: rgba(140, 185, 255, 0.55);
+}
+
+.duosnap-screen.duosnap-screen-hover {
+  background-color: rgba(94, 150, 255, 0.26);
+  border-color: rgba(160, 200, 255, 0.95);
+}
+
+.duosnap-ordinal {
+  font-size: 19px;
+  font-weight: 700;
+  color: rgba(238, 240, 248, 0.40);
+}
+
+.duosnap-screen-armed .duosnap-ordinal,
+.duosnap-screen-hover .duosnap-ordinal {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.duosnap-screen-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(238, 240, 248, 0.58);
+}
+
+/* Stage two: which pane of which layout. */
+
+.duosnap-frame {
+  background-color: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.11);
-  border-radius: 10px;
+  border-radius: 8px;
   transition-duration: 120ms;
 }
 
-.duosnap-tile.duosnap-item-active,
-.duosnap-button.duosnap-item-active {
-  background-color: rgba(94, 150, 255, 0.22);
+.duosnap-frame.duosnap-frame-active {
   border-color: rgba(140, 185, 255, 0.90);
 }
 
-.duosnap-fill {
-  background-color: rgba(226, 232, 245, 0.42);
-  border-radius: 3px;
+.duosnap-pane {
+  background-color: rgba(226, 232, 245, 0.30);
+  border-radius: 2px;
   transition-duration: 120ms;
 }
 
-.duosnap-fill.duosnap-fill-active {
+.duosnap-pane.duosnap-pane-active {
   background-color: rgba(158, 197, 255, 0.98);
-}
-
-.duosnap-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: rgba(238, 240, 248, 0.72);
-}
-
-.duosnap-label.duosnap-label-active {
-  color: rgba(255, 255, 255, 1.0);
 }
 
 .duosnap-separator {

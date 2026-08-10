@@ -133,6 +133,11 @@ export default class DuoSnapExtension extends Extension {
         if (window.is_maximized())
             window.unmaximize();
 
+        // The tray can aim at a screen the pointer never visited, so every path
+        // has to be able to land the window on another monitor.
+        if (window.get_monitor() !== zone.monitorIndex)
+            window.move_to_monitor(zone.monitorIndex);
+
         if (!window.allows_resize()) {
             const frame = window.get_frame_rect();
             window.move_frame(true,
@@ -142,8 +147,6 @@ export default class DuoSnapExtension extends Extension {
         }
 
         if (zone.maximize) {
-            if (window.get_monitor() !== zone.monitorIndex)
-                window.move_to_monitor(zone.monitorIndex);
             window.maximize();
             return;
         }

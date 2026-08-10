@@ -15,17 +15,12 @@
 
     <key name="show-quarters" type="b">
       <default>true</default>
-      <summary>Include the quarter zones</summary>
+      <summary>Include the quarters layout</summary>
     </key>
 
     <key name="show-thirds" type="b">
       <default>true</default>
-      <summary>Include the third-width zones</summary>
-    </key>
-
-    <key name="show-screen-row" type="b">
-      <default>true</default>
-      <summary>Include a maximize target per screen</summary>
+      <summary>Include the thirds layout</summary>
     </key>
 
     <key name="window-gap" type="i">

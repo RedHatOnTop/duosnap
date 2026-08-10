@@ -104,7 +104,10 @@ export default class DuoSnapPreferences extends ExtensionPreferences {
         settings.bind('show-delay', delayRow, 'value', 0);
         dragGroup.add(delayRow);
 
-        const zonesGroup = new Adw.PreferencesGroup({title: 'Zones'});
+        const zonesGroup = new Adw.PreferencesGroup({
+            title: 'Layouts',
+            description: 'Left and right halves and top and bottom halves are always offered.',
+        });
         page.add(zonesGroup);
 
         const quartersRow = new Adw.SwitchRow({title: 'Quarters'});
@@ -114,13 +117,6 @@ export default class DuoSnapPreferences extends ExtensionPreferences {
         const thirdsRow = new Adw.SwitchRow({title: 'Thirds'});
         settings.bind('show-thirds', thirdsRow, 'active', 0);
         zonesGroup.add(thirdsRow);
-
-        const screenRow = new Adw.SwitchRow({
-            title: 'Screen targets',
-            subtitle: 'A maximize target for each screen',
-        });
-        settings.bind('show-screen-row', screenRow, 'active', 0);
-        zonesGroup.add(screenRow);
 
         const gapRow = new Adw.SpinRow({
             title: 'Window gap',
