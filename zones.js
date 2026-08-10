@@ -78,20 +78,12 @@ export function fracRect(monitorIndex, frac, gap) {
     return inset({x, y, width: right - x, height: bottom - y}, gap);
 }
 
-// Monitors stacked in one column get "Top"/"Bottom" instead of ordinals — the
-// Zenbook Duo's two panels are the whole reason this extension exists.
-export function screenLabels() {
-    const monitors = [...Main.layoutManager.monitors].sort((a, b) => a.y - b.y || a.x - b.x);
-    const stacked = monitors.length === 2 &&
-        monitors.every(m => m.x === monitors[0].x && m.width === monitors[0].width) &&
-        monitors[0].y !== monitors[1].y;
-
-    return monitors.map((m, i) => ({
-        index: m.index,
-        ordinal: `${i + 1}`,
-        label: stacked ? (i === 0 ? 'Top' : 'Bottom') : `Screen ${i + 1}`,
-        glyph: stacked ? (i === 0 ? '▲' : '▼') : '',
-    }));
+// Ordinals in screen order, which is what ScreenXpert labels its screens with
+// and therefore what anyone arriving from it already reads fluently.
+export function screenOrdinals() {
+    return [...Main.layoutManager.monitors]
+        .sort((a, b) => a.y - b.y || a.x - b.x)
+        .map((m, i) => ({index: m.index, ordinal: `${i + 1}`}));
 }
 
 // Nearest monitor whose centre lies in the given direction, so the keybindings

@@ -2,7 +2,7 @@ import Clutter from 'gi://Clutter';
 import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
-import {TEMPLATES, fracRect, screenLabels, workAreaFor} from './zones.js';
+import {TEMPLATES, fracRect, screenOrdinals, workAreaFor} from './zones.js';
 
 const SCREEN_W = 132;
 const TPL_W = 104;
@@ -10,8 +10,6 @@ const TILE_MIN_H = 40;
 const TILE_MAX_H = 96;
 const TPL_GAP = 10;
 const SCREEN_GAP = 14;
-const LABEL_H = 14;
-const LABEL_GAP = 8;
 const TAB_H = 20;
 const TAB_GAP = 8;
 const GRIP_W = 18;
@@ -349,13 +347,13 @@ export class SnapOverlay {
         const tplH = tileHeight(TPL_W, monitorIndex);
         const templates = TEMPLATES.filter(t =>
             !t.setting || this._settings.get_boolean(t.setting));
-        const screens = Main.layoutManager.monitors.length > 1 ? screenLabels() : [];
+        const screens = Main.layoutManager.monitors.length > 1 ? screenOrdinals() : [];
 
         const monitor = Main.layoutManager.monitors[monitorIndex];
         const wa = workAreaFor(monitorIndex);
 
         const cardW = screens.length * SCREEN_W + SCREEN_GAP * (screens.length - 1) + 2 * PAD;
-        const cardH = PAD + screenH + LABEL_GAP + LABEL_H + TAB_GAP + TAB_H + PAD_BOTTOM;
+        const cardH = PAD + screenH + TAB_GAP + TAB_H + PAD_BOTTOM;
         const cardX = Math.round(monitor.x + (monitor.width - cardW) / 2);
         const cardY = Math.round(wa.y + TOP_MARGIN);
 
@@ -363,7 +361,7 @@ export class SnapOverlay {
         this._card.set_position(cardX, cardY);
         this._card.set_size(cardW, cardH);
 
-        const columnH = screenH + LABEL_GAP + LABEL_H + TAB_GAP + TAB_H;
+        const columnH = screenH + TAB_GAP + TAB_H;
         let x = PAD;
         screens.forEach((screen, i) => {
             if (i > 0) {
@@ -425,18 +423,6 @@ export class SnapOverlay {
         }));
         this._card.add_child(frame);
 
-        const captionY = y + screenH + LABEL_GAP;
-        const caption = new St.Widget({layout_manager: new Clutter.BinLayout()});
-        caption.set_position(x, captionY);
-        caption.set_size(SCREEN_W, LABEL_H);
-        caption.add_child(new St.Label({
-            style_class: 'duosnap-screen-label',
-            text: (screen.glyph ? `${screen.glyph}  ${screen.label}` : screen.label).toUpperCase(),
-            x_align: Clutter.ActorAlign.CENTER,
-            y_align: Clutter.ActorAlign.CENTER,
-        }));
-        this._card.add_child(caption);
-
         this._screenItems.push({
             type: 'screen',
             id: `screen-${screen.index}`,
@@ -444,14 +430,7 @@ export class SnapOverlay {
             actor: frame,
             activeClass: 'duosnap-screen-hover',
             active: false,
-            // The caption is part of the target, so the screen does not go dead
-            // in the strip of pixels under the miniature.
-            hit: {
-                x: cardX + x,
-                y: cardY + y,
-                width: SCREEN_W,
-                height: screenH + LABEL_GAP + LABEL_H,
-            },
+            hit: {x: cardX + x, y: cardY + y, width: SCREEN_W, height: screenH},
         });
 
         if (screen.index === this._armed)
@@ -459,7 +438,7 @@ export class SnapOverlay {
 
         // The reveal has to be somewhere the eye can find it, so it gets a
         // control of its own rather than an invisible strip of card.
-        const tabY = captionY + LABEL_H + TAB_GAP;
+        const tabY = y + screenH + TAB_GAP;
         const tab = new St.Widget({
             style_class: 'duosnap-tab',
             layout_manager: new Clutter.FixedLayout(),

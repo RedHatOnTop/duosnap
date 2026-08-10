@@ -12,10 +12,10 @@ Start dragging a window and a picker fades in at the top of whichever screen the
 pointer is over. It asks two questions in the order ScreenXpert's app switcher
 asks them — which screen, then which shape:
 
-- **Screen row** — one block per monitor, labelled `▲ Top` / `▼ Bottom` when the
-  monitors are stacked in a column and `Screen 1` / `Screen 2` otherwise. A block
-  is itself the "maximize on that screen" target.
-- **Layout tray** — under each block is a grip, and entering it raises that
+- **Screen row** — one number per monitor, in screen order, the way ScreenXpert
+  numbers them. A number is itself the "maximize on that screen" target; the plate
+  behind it is only drawn once the pointer is on it.
+- **Layout tray** — under each number is a grip, and entering it raises that
   screen's layouts: quarters, left and right halves, top and bottom halves,
   vertical thirds. Each is a miniature of the screen split into every pane it
   offers, and hovering a pane outlines the exact rectangle the window will land
@@ -77,9 +77,9 @@ and never rebuilt, and pane hit rectangles are stored relative to it. They tile 
 template's full miniature, seams and border included, so there is nowhere inside a
 template that selects nothing.
 
-The grip is a drawn control rather than a hot strip of card because a reveal the
-eye cannot find is not a reveal. It keeps a lit state for as long as the tray it
-opened is up, so it is clear which block the layouts on offer belong to. Below it,
+The grip is a drawn mark rather than a hot strip of card because a reveal the eye
+cannot find is not a reveal. It keeps a lit state for as long as the tray it
+opened is up, so it is clear which screen the layouts on offer belong to. Below it,
 down to the top of the tray, is an undrawn band that counts as the same target,
 widened by half the gap between columns so the bands meet: a pointer travelling
 straight down to the tray never falls out of the reveal and closes it.
