@@ -13,21 +13,23 @@ pointer is over. It asks two questions in the order ScreenXpert's app switcher
 asks them — which screen, then which shape:
 
 - **Screen row** — one block per monitor, labelled `▲ Top` / `▼ Bottom` when the
-  monitors are stacked in a column and `Screen 1` / `Screen 2` otherwise. Entering
-  a block aims the tray below at that screen; releasing on it maximizes there.
-- **Layout tray** — a miniature of the aimed screen per layout, split into every
-  pane that layout offers: quarters, left and right halves, top and bottom halves,
-  vertical thirds. Hovering a pane outlines the exact rectangle the window will
-  land in.
+  monitors are stacked in a column and `Screen 1` / `Screen 2` otherwise. A block
+  is itself the "maximize on that screen" target.
+- **Layout tray** — carrying on downwards, out of the bottom of a screen block,
+  raises that screen's layouts: quarters, left and right halves, top and bottom
+  halves, vertical thirds. Each is a miniature of the screen split into every pane
+  it offers, and hovering a pane outlines the exact rectangle the window will land
+  in. Going back up to the screen row puts the tray away again.
 
-Because the tray is aimed rather than followed, a window can be thrown into the
-bottom panel's bottom-right quarter without the pointer ever leaving the top
-panel. Releasing anywhere outside the card leaves the drag alone, so GNOME's own
-edge tiling still works as usual.
+So nothing but the screens is on offer until a screen has been chosen, and the
+layouts that then appear belong to that screen — which means a window can be
+thrown into the bottom panel's bottom-right quarter without the pointer ever
+leaving the top panel. Releasing anywhere outside the picker leaves the drag
+alone, so GNOME's own edge tiling still works as usual.
 
-The card follows the pointer across screens, and the screen it lands on starts out
-aimed, so snapping within the current screen costs no extra hover. With one
-monitor connected the screen row is dropped and the tray is all that remains.
+The picker follows the pointer across screens. With one monitor connected there is
+nothing to choose between, so the screen row is dropped and the tray is shown
+straight away.
 
 ### Keyboard
 
@@ -61,11 +63,18 @@ against rectangles it computed itself when laying the card out. That is also why
 the card is built from fixed-position children rather than a box layout — the hit
 rectangles have to be known exactly, not inferred from an allocation.
 
-Aiming the tray at a screen changes nothing but the monitor its panes resolve
-against. Every tray rectangle is identical from one screen to the next, so no
-rebuild happens and no target shifts out from under a pointer that is already
-moving toward it. Pane hit rectangles tile a template's full miniature, seams and
-border included, so there is nowhere inside a template that selects nothing.
+The screen row and the tray are separate surfaces rather than one card that grows,
+because a card that grew would re-centre and drag the screen blocks sideways out
+from under a pointer already moving toward one. Aiming the tray at a screen
+changes nothing but the monitor its panes resolve against, so it is repositioned
+and never rebuilt, and pane hit rectangles are stored relative to it. They tile a
+template's full miniature, seams and border included, so there is nowhere inside a
+template that selects nothing.
+
+Each screen block owns the strip of pixels between its own bottom edge and the top
+of the tray, and that strip is what raises the tray. The strips are widened by half
+the gap between blocks so that they meet, and a pointer travelling straight down
+cannot fall between them and leave the tray closed.
 
 Snapping happens in a `BEFORE_REDRAW` later rather than directly in `grab-op-end`,
 because at that point mutter has not finished placing the window it was dragging

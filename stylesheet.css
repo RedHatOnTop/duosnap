@@ -64,10 +64,6 @@
   background-color: rgba(158, 197, 255, 0.98);
 }
 
-.duosnap-separator {
-  background-color: rgba(255, 255, 255, 0.13);
-}
-
 .duosnap-preview {
   background-color: rgba(94, 150, 255, 0.30);
   border: 3px solid rgba(160, 200, 255, 0.98);
