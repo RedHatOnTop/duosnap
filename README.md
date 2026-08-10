@@ -6,6 +6,18 @@ and a one-gesture "maximize on the other screen" target. Written for an ASUS
 Zenbook Duo UX8406MA (two stacked 1920x1200 panels, 1.25 scale), but nothing in it
 is hardcoded to that machine.
 
+## Installing
+
+```
+git clone <this repo> ~/.local/share/gnome-shell/extensions/duosnap@local
+glib-compile-schemas ~/.local/share/gnome-shell/extensions/duosnap@local/schemas
+gnome-extensions enable duosnap@local
+```
+
+The compiled schema is not checked in, so the second line is not optional — without
+it the extension fails to load its settings. GNOME Shell cannot be restarted in
+place on Wayland, so log out and back in before it appears.
+
 ## What it does
 
 Start dragging a window and a picker fades in at the top of whichever screen the
