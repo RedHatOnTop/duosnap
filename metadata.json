@@ -1,5 +1,5 @@
 {
-  "uuid": "duosnap@local",
+  "uuid": "duosnap@RedHatOnTop.github.io",
   "name": "Duo Snap",
   "description": "ScreenXpert-style snap layouts for dual-screen laptops. Dragging a window raises a picker: aim at a screen, then pick a pane out of that screen's layouts.",
   "shell-version": [

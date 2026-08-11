@@ -9,9 +9,10 @@ is hardcoded to that machine.
 ## Installing
 
 ```
-git clone <this repo> ~/.local/share/gnome-shell/extensions/duosnap@local
-glib-compile-schemas ~/.local/share/gnome-shell/extensions/duosnap@local/schemas
-gnome-extensions enable duosnap@local
+git clone https://github.com/RedHatOnTop/duosnap.git \
+    ~/.local/share/gnome-shell/extensions/duosnap@RedHatOnTop.github.io
+glib-compile-schemas ~/.local/share/gnome-shell/extensions/duosnap@RedHatOnTop.github.io/schemas
+gnome-extensions enable duosnap@RedHatOnTop.github.io
 ```
 
 The compiled schema is not checked in, so the second line is not optional — without
@@ -57,7 +58,7 @@ Both are rebindable in the extension's preferences.
 
 ### Preferences
 
-`gnome-extensions prefs duosnap@local` — toggle the picker, set how long a drag has
+`gnome-extensions prefs duosnap@RedHatOnTop.github.io` — toggle the picker, set how long a drag has
 to last before it appears, drop the quarters or thirds layouts, and set a gap to
 leave around every snapped window. Halves are always offered.
 
